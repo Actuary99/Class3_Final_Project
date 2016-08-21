@@ -23,11 +23,11 @@ We create a new data set that includes only the mean and standard deviation feat
 
 We then call the 'melt' and 'dcast' functions to transform the data frame into one wherein we can calcuate the average of each mean and standard deviation feature associated with each subject/activity combination.  
 
-At the very end, we try to further describe the resulting column data.  First, we look at the abbreviated 'feature' names and save more robust names that detail for what each abbrevation stands. These more robust names are stored in a separate data frame.  At the very end, we put the original (abbreviated) feature names next to these more robust names.  For example, the column name 'tBodyGyrostd()-X' (from the original feature name) is placed next to its more robust descriptor "Time Body Gyroscope Std Deviation - X Axis" in the final naming convention of the output data frame, making it clear which original 'feature' name was mapped to the more robust descriptor.  This is done simply as a reminder of what each abbrevation in the original naming convention for each feature is meant to represent. 
+At the very end, we try to further describe the resulting column data.  First, we look at the abbreviated 'feature' names and save more robust names that detail what each abbrevation stands for. These more robust names are stored in a separate data frame.  At the very end, we put the original (abbreviated) feature names next to its more robust name.  For example, the column name 'tBodyGyrostd()-X' (from the original 'feature' name) is placed next to its more robust descriptor "Time Body Gyroscope Std Deviation - X Axis" in the final naming convention of the output data frame, making it clear which original 'feature' name was mapped to each more robust descriptor.  This is done simply as a reminder of what each abbrevation in the original naming convention for each feature is meant to represent. 
 
 This final data frame is then written to a table, to a text file called 'r_analysis_output.txt'.
 
-To view this file in an easily-readable format, you can use the following command:
+To view this file in an easily-readable format, one can use the following command:
 
 data<-read.table("./r_analysis_output.txt",HEADER=TRUE)  #if the submitted R script is executed in your working directory
 View(data)
