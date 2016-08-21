@@ -1,7 +1,7 @@
 # Class3_Final_Project
 This project involves reading in files continaing training and test data for 30 subjects who engaged in up to 6 activities.  A collection of 561 statistics were collected on these subjects. The data represent information collected from the accelerometers from the Samsung Galaxy S smartphone.
 
-The R script for this project is contained in a file called r_analysis.R.  Details for the way in which the source information was downloaded, cleaned, and transformed is imbedded in that file.  Many of those details are replicated here for the sake of convenience.
+The R script for this project is contained in a file called r_analysis.R, part of this same repo.  Details for the way in which the source information was downloaded, cleaned, and transformed is imbedded in that file.  Many of those details are replicated here for the sake of convenience.
 
 First, the script relies on commands that are part of the 'dplyr' and 'reshape' packages, so those packages are installed at the start of the script. 
 
