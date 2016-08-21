@@ -83,13 +83,13 @@ fBodyAccMag
 
 ###The following list describes the data contained in each dataframe of the r_analysis.R script.
 
-training.obs 
+-training.obs 
   contain the 561 obs on each subject/activity of the training group
 
-test.obs 
+-test.obs 
   contains the 561 obs on each subject/activity of the test group
 
-training.labels
+-training.labels
   contains the activity, numbered 1-6, associated with each row of the training group data frame (training.obs)
 
 test.labels 
