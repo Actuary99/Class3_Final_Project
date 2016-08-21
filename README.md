@@ -29,6 +29,6 @@ This final data frame is then written to a table, to a text file called 'r_analy
 
 To view this file in an easily-readable format, one can use the following command:
 
-data<-read.table("./r_analysis_output.txt",HEADER=TRUE)  #if the submitted R script is executed in your working directory
+data<-read.table("./r_analysis_output.txt",header=TRUE)  #if the submitted R script is executed in your working directory
 View(data)
 
