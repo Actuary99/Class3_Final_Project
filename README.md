@@ -11,97 +11,24 @@ The activity associated with each observation (in either the 'training' or 'test
 
 The subject number (from 1-30) for each observation in each of the 'training' and 'test' data sets were available in separate files, called 'subject_train.txt' and 'subject_test.tx', respectively.  These files were then read into separate data frames.
 
-Each activity in the 'y_train.txt' and 'y_test.txt' files could take on a value from 1-6.  We then read in another file which maps these activity numbers to more meaningful activity names.
+Each activity in the 'y_train.txt' and 'y_test.txt' files could take on a value from 1-6.  We next read in another file which maps these activity numbers to more meaningful activity names.
 
-Each of the 561 statistics captured on each subject/activity is associated with a 'feature'.  We read in a file which contains the feature associated with each of the 561 statitics captured.  
+Each of the 561 statistics captured for each observation associated with some combination of subject/activity is associated with a 'feature'.  We read in a file which contains the feature associated with each of these 561 statitics.  
 
-The data sets containing the subject, the activity, and 
+The data sets containing the subject identifier, the activity, and each of the 561 features for each observation are then combined, first for each of the training and test data sets, and then in thea aggregate (for the training and test data sets combined).  
 
-#Now construct the full 'training' and 'test' data sets, which will be comprised of the subject for each obs, 
-#the activity number for each obs, and the 561 features measured for each subject/activity (now with
-#more meaningful column names)
-training<-cbind(subject.train,training.labels,training.obs)
-test<-cbind(subject.test,test.labels,test.obs)
+We are asked only to keep only those features associated with a 'mean' or a standard deviation, 'std'.  This request is fairly open-ended, so we captured the broadest interpreation of this request, selecting any of the 561 features whose name or description included some reference to one of these statistics (even if some of these 'features' are means or std deviation of other available features).  
 
-#We are asked to combine the 'training' and 'test' data sets into one final data set
-data.all<-rbind(training,test)
+We create a new data set that includes only the mean and standard deviation features for all subject and activity combinations included in the original data set.   We then merge this data set with the file that translates the activity numbers (1-6) with the associated activity name (laying, sitting, standing, walking, walking_downstairs,walking_upstairs).  When this merge occurs, the newly added activity name is in the last column.  We move the name to the first column (overwriting the associated activity number), rename the first column to reflect it now holds the activity name (not the activity number), and remove the last column (as it is now redundant with column 1).
 
-#We only want to keep those features associated with either a 'mean' or a 'standard deviation'.  We exclude all other
-#columns from our final data set.  We will create two different data sets, one containing only the info about the 'means'
-#and one containing only the information about the 'std deviations'
-mean.data<-data.all[,grepl("[Mn]ean",names(data.all))]
-std.data<-data.all[,grepl("[Ss]td",names(data.all))]
+We then call the 'melt' and 'dcast' functions to transform the data frame into one wherein we can calcuate the average of each mean and standard deviation feature associated with each subject/activity combination.  
 
-#We will now construct the final data set for just features containing mean and std dev info.  
-#We show the subject number, the activity number from the full data set and then all features associated with a 
-#mean or a std dev
-data.meanstd<-cbind(data.all[,c(1,2)],mean.data,std.data)
+At the very end, we try to further describe the resulting column data.  First, we look at the abbreviated 'feature' names and save more robust names that detail for what each abbrevation stands. These more robust names are stored in a separate data frame.  At the very end, we put the original (abbreviated) feature names next to these more robust names.  For example, the column name 'tBodyGyrostd()-X' (from the original feature name) is placed next to its more robust descriptor "Time Body Gyroscope Std Deviation - X Axis" in the final naming convention of the output data frame, making it clear which original 'feature' name was mapped to the more robust descriptor.  This is done simply as a reminder of what each abbrevation in the original naming convention for each feature represents. 
 
-#We now need to merge in the activity labels/descriptions, which will give better meaning to the activity numbers.  
-#We then arrange the final data set by the 'subject'
-data.meanstd<-merge(data.meanstd,activity.labels,by="activity.number")
-data.meanstd<-arrange(data.meanstd,subject)
+This final data frame is then written to a table, to a text file called 'r_analysis_output.txt'.
 
-#The activity name is at the last column in the data set.  We want to move it to the beginning and overwrite the 
-#activity number.  Once we have moved the activity name to the first column, we can rename the first col to better
-#correspond to the values it now holds.  Since we moved the activity name to the first column, we no longer need it as 
-#the last column.  We can delete the last column, which is now duplicate information.
-data.meanstd[,1]<-data.meanstd[,length(data.meanstd)]
-data.final<-rename(data.meanstd,activity = activity.number)
-data.final<-data.final[,1:length(data.meanstd)-1]
+To view this file in an easily-readable format, you can use the following command:
 
-#We now wish to get mean information on all variables, by every subject/activity combination.  We call the 'melt'
-#command to tell R that the id variables in which we are interested are called 'activity.name' and 'subject'.  All other
-#variables are measure variables (by default in the 'melt' command).  All these measure variables (not specifically
-#mentioned in the command line for melt) will collectively be referred to hereafter as 'variable'.  
-#To use the 'melt' command, you must install the 'reshape2' package.
-melted.df<- melt(data.final,id.vars=c("activity","subject"),variable.name="variable",na.rm=T)
-
-#We now wish to calculate the mean of each measure variable for each combination of 'subject' and 'activity.name'
-#Since there are 30 subjects and 6 activities, the max number of combinations is 180 (if there is at least one
-#observation for each permutation).  The 'dcast' command requires the 'reshape2' package
-avg.df<-dcast(melted.df,subject+activity~variable,mean)
-
-#Make a copy of the tidy data set containing the mean and std deviations.  
-avg.df2<-avg.df
-
-names(avg.df2)
-
-
-#Convert the feature names of this new tiny data set into something more readable & meaningful
-
-names(avg.df2)<-sub("^t","Time ",names(avg.df2)) 
-names(avg.df2)<-sub("tBody","Time Body ",names(avg.df2)) 
-names(avg.df2)<-sub("^f","FFT ",names(avg.df2)) 
-names(avg.df2)<-sub("[Gg]ravity"," Gravity",names(avg.df2)) 
-names(avg.df2)<-sub("[Mm]ean"," Mean",names(avg.df2)) 
-
-names(avg.df2)<-sub("-mean\\(\\)","-Mean",names(avg.df2))   
-names(avg.df2)<-sub("-meanFreq\\(\\)"," Mean Frequency",names(avg.df2))   
-names(avg.df2)<-sub("-std\\(\\)","-Std Deviation",names(avg.df2))
-names(avg.df2)<-sub("angle\\("," Angle between vectors \\(",names(avg.df2))
-
-names(avg.df2)<-sub("Acc","Acceleration ",names(avg.df2))
-names(avg.df2)<-sub("Mag","Magnitude ",names(avg.df2))
-names(avg.df2)<-sub("Jerk","Jerk ",names(avg.df2))
-names(avg.df2)<-sub("Gravity","Gravity ",names(avg.df2))
-names(avg.df2)<-sub("Gyro","Gyroscope ",names(avg.df2))
-names(avg.df2)<-sub("Body","Body ",names(avg.df2))
-names(avg.df2)<-sub("Body Body","Body ",names(avg.df2))
-names(avg.df2)<-sub("-X$"," X Axis",names(avg.df2))
-names(avg.df2)<-sub("-Y$"," Y Axis",names(avg.df2))
-names(avg.df2)<-sub("-Z$"," Z Axis",names(avg.df2))
-
-#Put the prior abbreviated feature names next to the new, more descriptive feature names so we can see them 
-#side-by-side
-names.translation<-paste(names(avg.df[3:length(avg.df)]),names(avg.df2[3:length(avg.df2)]),sep="-->")
-
-names(avg.df)<-c("subject","activity",names.translation)
-
-#View the final data set
-View(avg.df)
-
-#Write the final data frame to a text file
-write.table(avg.df,file="r_analysis_output.txt",row.names=FALSE)
-
+data<-read.table("./r_analysis_output.txt",HEADER=TRUE)  #if the submitted R script is executed in your working directory
+View(data)
 
