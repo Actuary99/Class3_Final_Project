@@ -92,7 +92,7 @@ fBodyAccMag
 -training.labels
   contains the activity, numbered 1-6, associated with each row of the training group data frame (training.obs)
 
-test.labels 
+- test.labels 
   contains the activity, numbered 1-6, associated with each row of the test group data frame (test.obs)
   
 subject.train 
